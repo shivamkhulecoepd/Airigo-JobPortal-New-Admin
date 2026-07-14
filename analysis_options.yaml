@@ -1,0 +1,37 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - .dart_tool/**
+    - ios/**
+    - android/**
+    - web/**
+    - linux/**
+    - macos/**
+    - windows/**
+
+  # Ignore ALL warnings & info → only errors remain
+  errors:
+    # Turn all common warnings into ignore
+    unused_import: ignore
+    unused_local_variable: ignore
+    unused_element: ignore
+    unused_field: ignore
+    dead_code: ignore
+    avoid_print: ignore
+    non_constant_identifier_names: ignore
+    deprecated_member_use: ignore
+    unnecessary_null_comparison: ignore
+    use_build_context_synchronously: ignore
+    unused_result: ignore
+
+linter:
+  rules:
+    # Disable all lint rules (these produce info/warnings)
+    avoid_print: false
+    prefer_const_constructors: false
+    prefer_final_fields: false
+    prefer_final_locals: false
+    use_key_in_widget_constructors: false
+    avoid_unnecessary_containers: false

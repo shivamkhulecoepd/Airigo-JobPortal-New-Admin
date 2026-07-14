@@ -1,0 +1,52 @@
+{
+    "servers": {
+        "bdd-auto-mcp-job-app-appium": {
+            "command": "uv",
+            "args": [
+                "run",
+                "--project",
+                "c:\\Users\\User\\AppData\\Roaming\\Code - Insiders\\User\\globalStorage\\liujingping.bdd-ai-toolkit\\appium-mcp-server",
+                "python",
+                "c:\\Users\\User\\AppData\\Roaming\\Code - Insiders\\User\\globalStorage\\liujingping.bdd-ai-toolkit\\appium-mcp-server\\simple_server.py",
+                "--transport",
+                "stdio",
+                "--platform",
+                "mac",
+                "--config",
+                "d:\\Suraj_Work\\job-app-dev\\job-app\\bdd_ai_conf.json"
+            ],
+            "env": {
+                "PYTHONIOENCODING": "utf-8",
+                "PYTHONUTF8": "1",
+                "LANG": "en_US.UTF-8",
+                "LC_ALL": "en_US.UTF-8"
+            }
+        },
+        "bdd-auto-mcp-job-app-appium-sse": {
+            "type": "sse",
+            "url": "http://localhost:8000/sse"
+        },
+        "bdd-auto-mcp-job-app-windows": {
+            "command": "uv",
+            "args": [
+                "run",
+                "--project",
+                "c:\\Users\\User\\AppData\\Roaming\\Code - Insiders\\User\\globalStorage\\liujingping.bdd-ai-toolkit\\auto-mcp-demo",
+                "python",
+                "c:\\Users\\User\\AppData\\Roaming\\Code - Insiders\\User\\globalStorage\\liujingping.bdd-ai-toolkit\\auto-mcp-demo\\simple_server.py",
+                "--transport",
+                "stdio",
+                "--browser",
+                "edge",
+                "--config",
+                "d:\\Suraj_Work\\job-app-dev\\job-app\\bdd_ai_conf.json"
+            ],
+            "env": {
+                "PYTHONIOENCODING": "utf-8",
+                "PYTHONUTF8": "1",
+                "LANG": "en_US.UTF-8",
+                "LC_ALL": "en_US.UTF-8"
+            }
+        }
+    }
+}

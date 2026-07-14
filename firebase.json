@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "airigo-jobs",
+          "appId": "1:273633366599:android:47dcbf7b76c169dbf4d762",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "airigo-jobs",
+          "configurations": {
+            "android": "1:273633366599:android:47dcbf7b76c169dbf4d762",
+            "ios": "1:273633366599:ios:baeabbea59a61adaf4d762",
+            "macos": "1:273633366599:ios:baeabbea59a61adaf4d762",
+            "web": "1:273633366599:web:2c6cd22ad95994a6f4d762",
+            "windows": "1:273633366599:web:4fd0eea263cd23d2f4d762"
+          }
+        }
+      }
+    }
+  }
+}
