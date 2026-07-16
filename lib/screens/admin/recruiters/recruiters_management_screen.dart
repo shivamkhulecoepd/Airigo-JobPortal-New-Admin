@@ -162,6 +162,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
@@ -169,6 +170,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
         title: const Text('Recruiters Management'),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: theme.colorScheme.onSurface,
           tabs: [
             Tab(
               text: 'Pending (${_recruitersByStatus['pending']?.length ?? 0})',

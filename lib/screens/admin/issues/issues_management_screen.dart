@@ -15,7 +15,8 @@ class IssuesManagementScreen extends StatefulWidget {
   State<IssuesManagementScreen> createState() => _IssuesManagementScreenState();
 }
 
-class _IssuesManagementScreenState extends State<IssuesManagementScreen> with SingleTickerProviderStateMixin {
+class _IssuesManagementScreenState extends State<IssuesManagementScreen>
+    with SingleTickerProviderStateMixin {
   final AdminApiService _apiService = AdminApiService();
   late TabController _tabController;
   Map<String, List<AdminIssueModel>> _issuesByStatus = {
@@ -36,7 +37,7 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
     setState(() => _isLoading = true);
     try {
       final response = await _apiService.getIssues();
-      
+
       // Handle different response formats
       List<dynamic> issuesData;
       if (response['data'] is List) {
@@ -45,7 +46,7 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
         // If no data field or it's not a list, use empty list
         issuesData = [];
       }
-      
+
       final issues = issuesData
           .map((json) => AdminIssueModel.fromJson(json))
           .toList();
@@ -61,16 +62,16 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
       if (mounted) {
         setState(() => _isLoading = false);
         print('Error loading issues: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading issues: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading issues: $e')));
       }
     }
   }
 
   Future<void> _updateStatus(int issueId, String status) async {
     final responseController = TextEditingController();
-    
+
     final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => AlertDialog(
@@ -89,9 +90,13 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, {'response': responseController.text}),
+            onPressed: () =>
+                Navigator.pop(context, {'response': responseController.text}),
             child: const Text('Update'),
           ),
         ],
@@ -103,14 +108,21 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
         await _apiService.updateIssueStatus(
           issueId,
           status,
-          adminResponse: result['response']?.isNotEmpty == true ? result['response'] : null,
+          adminResponse: result['response']?.isNotEmpty == true
+              ? result['response']
+              : null,
         );
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Issue updated'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Issue updated'),
+            backgroundColor: Colors.green,
+          ),
         );
         _loadIssues();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
       }
     }
   }
@@ -118,6 +130,7 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
@@ -125,9 +138,13 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
         title: const Text('Issues & Reports'),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: theme.colorScheme.onSurface,
           tabs: [
             Tab(text: 'Pending (${_issuesByStatus['pending']?.length ?? 0})'),
-            Tab(text: 'In Progress (${_issuesByStatus['in_progress']?.length ?? 0})'),
+            Tab(
+              text:
+                  'In Progress (${_issuesByStatus['in_progress']?.length ?? 0})',
+            ),
             Tab(text: 'Resolved (${_issuesByStatus['resolved']?.length ?? 0})'),
           ],
         ),
@@ -200,7 +217,10 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
                 Expanded(
                   child: Text(
                     issue.title,
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 _buildStatusBadge(issue.status),
@@ -240,7 +260,10 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
                   children: [
                     Text(
                       'Admin Response:',
-                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 4.h),
                     Text(
@@ -266,7 +289,9 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
                     onPressed: () => _updateStatus(issue.id, 'resolved'),
                     icon: const Icon(Icons.check, size: 16),
                     label: const Text('Mark Resolved'),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
                   ),
                 if (issue.status == 'resolved')
                   OutlinedButton.icon(
@@ -307,7 +332,11 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen> with Si
       ),
       child: Text(
         status.toUpperCase().replaceAll('_', ' '),
-        style: TextStyle(fontSize: 10.sp, color: color, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 10.sp,
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

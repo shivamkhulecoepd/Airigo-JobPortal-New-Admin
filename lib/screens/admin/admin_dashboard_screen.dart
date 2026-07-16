@@ -1,4 +1,8 @@
 import 'package:airigo_jobportal/models/admin/admin_stats_model.dart';
+import 'package:airigo_jobportal/screens/admin/applications/applications_management_screen.dart';
+import 'package:airigo_jobportal/screens/admin/jobs/jobs_management_screen.dart';
+import 'package:airigo_jobportal/screens/admin/jobseekers/jobseekers_management_screen.dart';
+import 'package:airigo_jobportal/screens/admin/recruiters/recruiters_management_screen.dart';
 import 'package:airigo_jobportal/services/admin/admin_api_service.dart';
 import 'package:airigo_jobportal/services/notification_manager.dart';
 import 'package:airigo_jobportal/utils/theme.dart';
@@ -447,14 +451,26 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   value: _stats!.totalJobseekers.toString(),
                   icon: Iconsax.profile_2user,
                   color: const Color(0xFF182E8B),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const JobseekersManagementScreen(),
+                      ),
+                    );
+                  },
                 ),
                 StatCard(
                   title: 'Recruiters',
                   value: _stats!.totalRecruiters.toString(),
                   icon: Iconsax.building,
                   color: const Color(0xFF7F1A4D),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const RecruitersManagementScreen(),
+                      ),
+                    );
+                  },
                 ),
                 StatCard(
                   title: 'Active Users',
@@ -486,7 +502,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   value: _stats!.totalJobs.toString(),
                   icon: Iconsax.briefcase,
                   color: AppTheme.primaryBrand,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const JobsManagementScreen(),
+                      ),
+                    );
+                  },
                 ),
                 StatCard(
                   title: 'Pending Approval',
@@ -532,7 +554,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   value: _stats!.totalApplications.toString(),
                   icon: Iconsax.document_text,
                   color: AppTheme.primaryBrand,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ApplicationsManagementScreen(),
+                      ),
+                    );
+                  },
                 ),
                 StatCard(
                   title: 'Pending',

@@ -19,7 +19,8 @@ class JobsManagementScreen extends StatefulWidget {
 class _JobsManagementScreenState extends State<JobsManagementScreen>
     with SingleTickerProviderStateMixin {
   final AdminApiService _apiService = AdminApiService();
-  final AdminNotificationService _notificationService = AdminNotificationService();
+  final AdminNotificationService _notificationService =
+      AdminNotificationService();
   late TabController _tabController;
 
   List<AdminJobModel> _pendingJobs = [];
@@ -109,7 +110,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
   Future<void> _approveJob(int jobId) async {
     try {
       final result = await _apiService.approveJob(jobId);
-      
+
       // Send notification to recruiter
       try {
         final jobData = result['job'];
@@ -122,7 +123,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
       } catch (e) {
         print('Failed to send approval notification: $e');
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Job approved'),
@@ -140,7 +141,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
   Future<void> _rejectJob(int jobId) async {
     try {
       final result = await _apiService.rejectJob(jobId);
-      
+
       // Send notification to recruiter
       try {
         final jobData = result['job'];
@@ -153,7 +154,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
       } catch (e) {
         print('Failed to send rejection notification: $e');
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Job rejected'),
@@ -209,6 +210,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
@@ -216,6 +218,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
         title: const Text('Jobs Management'),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: theme.colorScheme.onSurface,
           tabs: [
             Tab(text: 'Pending (${_pendingJobs.length})'),
             const Tab(text: 'All Jobs'),
@@ -385,10 +388,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                   ),
                   child: Text(
                     job.jobType,
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      color: Colors.yellow,
-                    ),
+                    style: TextStyle(fontSize: 10.sp, color: Colors.yellow),
                   ),
                 ),
                 if (job.isUrgentHiring) ...[
@@ -430,24 +430,24 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                   ),
                 ),
                 if (isPending || job.approvalStatus == 'pending') ...[
-                  SizedBox(width: 8.w),
-                  ElevatedButton.icon(
+                  // SizedBox(width: 4.w),
+                  ElevatedButton(
                     onPressed: () => _approveJob(job.id),
-                    icon: const Icon(Icons.check, size: 16),
-                    label: const Text('Approve'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
+                      side: const BorderSide(color: Colors.green),
                     ),
+                    // icon: const Icon(Icons.check, size: 16),
+                    child: const Text('Approve'),
                   ),
                   SizedBox(width: 8.w),
-                  OutlinedButton.icon(
+                  ElevatedButton(
                     onPressed: () => _rejectJob(job.id),
-                    icon: const Icon(Icons.close, size: 16),
-                    label: const Text('Reject'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
                     ),
+                    child: const Text('Reject'),
                   ),
                 ],
                 if (!isPending && job.approvalStatus == 'approved') ...[
