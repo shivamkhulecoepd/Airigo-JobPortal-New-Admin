@@ -265,21 +265,6 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
           children: [
             Row(
               children: [
-                // CircleAvatar(
-                //   radius: 28.r,
-                //   backgroundColor: AppTheme.primaryBrand.withOpacity(0.1),
-                //   backgroundImage: recruiter.profileImageUrl != null
-                //       ? CachedNetworkImageProvider(recruiter.profileImageUrl!)
-                //       : null,
-                //       onBackgroundImageError: (exception, stackTrace) {
-
-                //       },
-                //   child: Icon(
-                //     Iconsax.building,
-                //     size: 28.sp,
-                //     color: AppTheme.primaryBrand,
-                //   ),
-                // ),
                 Container(
                   width: 60.w,
                   height: 60.w,
@@ -384,23 +369,20 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                 ),
                 if (recruiter.approvalStatus == 'pending') ...[
                   SizedBox(width: 8.w),
-                  ElevatedButton.icon(
+                  ElevatedButton(
                     onPressed: () => _approveRecruiter(recruiter.id),
-                    icon: const Icon(Icons.check, size: 16),
-                    label: const Text('Approve'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),
+                    child: const Text('Approve'),
                   ),
                   SizedBox(width: 8.w),
-                  OutlinedButton.icon(
+                  ElevatedButton(
                     onPressed: () => _rejectRecruiter(recruiter.id),
-                    icon: const Icon(Icons.close, size: 16),
-                    label: const Text('Reject'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
                     ),
+                    child: const Text('Reject'),
                   ),
                 ],
               ],

@@ -37,23 +37,15 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
     // Show a loading spinner only if we don't have a user yet and are currently loading.
     // This prevents the entire screen from flashing a spinner during background refreshes.
     if (user == null && authState.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     // If we finished loading but there's no user, or the user is not an admin, redirect.
     if (user == null || user.role != 'admin') {
       _redirectToLogin(context);
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    // Render the active screen directly.
-    // By NOT using IndexedStack, we ensure that screens are only initialized 
-    // exactly when they are navigated to. This completely prevents the PHP backend 
-    // from hanging due to 5 simultaneous heavy API requests on app startup.
     return Scaffold(
       body: _adminScreens[_currentIndex],
       bottomNavigationBar: AdminBottomNavBar(
