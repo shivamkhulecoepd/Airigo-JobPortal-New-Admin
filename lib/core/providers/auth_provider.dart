@@ -3,6 +3,7 @@
 // Handles auth state with Riverpod AsyncNotifier
 // ============================================================
 
+import 'package:airigo_jobportal/models/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/jobseeker_model.dart';
 import '../../../models/recruiter_model.dart';
@@ -107,7 +108,7 @@ class AuthNotifier extends AsyncNotifier<dynamic> {
         final result = await _authService.getProfile(userType: userType);
         if (result['success']) {
           state = AsyncData(result['user']);
-          
+
           // --- Initialize notifications after successful profile fetch ---
           await NotificationManager().initialize();
           final user = result['user'];
@@ -296,8 +297,13 @@ final isAdminProvider = Provider<bool>((ref) {
   // Admin users are stored as UserModel with role/user_type = 'admin'
   if (user == null) return false;
   // Check if user has admin role (could be UserModel with role='admin')
-  if (user is Map) return user['user_type'] == 'admin';
+  if (user is Map) {
+    return user['user_type'] == 'admin' || user['user_type'] == 'super_admin';
+  }
   // For UserModel, we can check if it has admin-specific properties
+  if (user is UserModel) {
+    return user.role == 'admin' || user.role == 'super_admin';
+  }
   return false;
 });
 

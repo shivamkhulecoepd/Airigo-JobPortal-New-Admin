@@ -101,11 +101,11 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
           ElevatedButton(
             onPressed: () =>
                 Navigator.pop(context, {'response': responseController.text}),
-            child: const Text('Update'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
+            child: const Text('Update'),
           ),
         ],
       ),

@@ -749,7 +749,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                     SizedBox(height: 16.h),
                     Divider(),
                     SizedBox(height: 16.h),
@@ -813,7 +813,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                     SizedBox(height: 16.h),
                     Divider(),
                     SizedBox(height: 16.h),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../screens/jobseeker/jobseeker_savedjobs_screen.dart';
 
 enum ResponseType { success, error, warning, info }
 
@@ -119,7 +118,7 @@ class _SnackContent extends StatelessWidget {
               ),
             ),
           ),
-          
+
           if (actionText != null && onAction != null) ...[
             SizedBox(width: 8.w),
             ElevatedButton(
@@ -134,10 +133,7 @@ class _SnackContent extends StatelessWidget {
               ),
               child: Text(
                 actionText!,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
               ),
             ),
           ],

@@ -1,6 +1,5 @@
 import 'package:airigo_jobportal/core/service_locator.dart';
 import 'package:airigo_jobportal/screens/authentication/splash_screen.dart';
-import 'package:airigo_jobportal/screens/jobseeker/jobseeker_main_screen.dart';
 import 'package:airigo_jobportal/services/firebase_messaging_service.dart';
 import 'package:airigo_jobportal/services/notification_manager.dart';
 import 'package:airigo_jobportal/utils/theme.dart';

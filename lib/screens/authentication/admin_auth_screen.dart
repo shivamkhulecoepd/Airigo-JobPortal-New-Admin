@@ -1,10 +1,8 @@
 import 'package:airigo_jobportal/core/providers/auth_provider.dart';
 import 'package:airigo_jobportal/screens/admin/admin_main_screen.dart';
-import 'package:airigo_jobportal/screens/authentication/choose_role_screen.dart';
 import 'package:airigo_jobportal/utils/extensions.dart';
 import 'package:airigo_jobportal/widgets/app_scaffold_feedback.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

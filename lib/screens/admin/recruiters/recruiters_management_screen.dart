@@ -288,13 +288,14 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30.r),
                     child: recruiter.profileImageUrl != null
-                        ? Image.network(
-                            recruiter.profileImageUrl!,
+                        ? CachedNetworkImage(
+                            imageUrl: recruiter.profileImageUrl!,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
+                            errorWidget: (context, url, error) {
                               return Center(
                                 child: Icon(
                                   Icons.broken_image,
+                                  size: 28.sp,
                                   color: AppColors.primary,
                                 ),
                               );
@@ -453,25 +454,26 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(35.r),
                           child: recruiter.profileImageUrl != null
-                              ? Image.network(
-                                  recruiter.profileImageUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Center(
-                                      child: Icon(
-                                        Icons.broken_image,
-                                        color: AppColors.primary,
-                                      ),
-                                    );
-                                  },
-                                )
-                              : Center(
-                                  child: Icon(
-                                    Iconsax.building,
-                                    size: 32.sp,
-                                    color: AppColors.primary,
-                                  ),
+                              ? CachedNetworkImage(
+                            imageUrl: recruiter.profileImageUrl!,
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) {
+                              return Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  size: 28.sp,
+                                  color: AppColors.primary,
                                 ),
+                              );
+                            },
+                          )
+                        : Center(
+                            child: Icon(
+                              Iconsax.building,
+                              size: 28.sp,
+                              color: AppColors.primary,
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(width: 16.w),

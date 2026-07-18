@@ -1,8 +1,5 @@
 import 'package:airigo_jobportal/core/providers/feature_flags_provider.dart';
-import 'package:airigo_jobportal/screens/authentication/onboarding_screen.dart';
 import 'package:airigo_jobportal/screens/authentication/admin_auth_screen.dart';
-import 'package:airigo_jobportal/screens/jobseeker/jobseeker_main_screen.dart';
-import 'package:airigo_jobportal/screens/recruiter/recruiter_main_screen.dart';
 import 'package:airigo_jobportal/screens/admin/admin_main_screen.dart';
 import 'package:airigo_jobportal/core/providers/auth_provider.dart';
 import 'package:airigo_jobportal/models/jobseeker_model.dart';
@@ -70,16 +67,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _navigateToNextScreen() async {
     print('SplashScreen: Navigating...');
-    
+
     // Start initializing services and auth concurrently
     final startTime = DateTime.now();
-    
+
     // Wait for auth state to be fully resolved from API
     dynamic user;
     try {
       print('SplashScreen: Waiting for auth state to resolve...');
       user = await ref.read(authStateProvider.future);
-      print('SplashScreen: Auth state resolved. User: ${user?.name ?? 'Anonymous'}');
+      print(
+        'SplashScreen: Auth state resolved. User: ${user?.name ?? 'Anonymous'}',
+      );
     } catch (e) {
       print('SplashScreen: Error resolving auth state: $e');
     }
@@ -95,41 +94,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
 
     // Based on the resolved user, decide where to go
-    if (user != null) {
-      if (user is JobseekerModel) {
-        print('SplashScreen: Navigating to JobseekerMainScreen');
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const JobseekerMainScreen()),
-        );
-      } else if (user is RecruiterModel) {
-        print('SplashScreen: Navigating to RecruiterMainScreen');
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const RecruiterMainScreen()),
-        );
-      } else if (user is UserModel && user.role == 'admin') {
-        print('SplashScreen: Admin user found, navigating to AdminMainScreen');
+    if (widget.isAdmin) {
+      if (user != null && user is UserModel && (user.role == 'admin' || user.role == 'super_admin')) {
+        print('SplashScreen: Admin user found, navigating to admin dashboard');
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const AdminMainScreen()),
         );
       } else {
-        // Fallback for unexpected user type
-        print('SplashScreen: Unknown user type, going to onboarding');
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        print(
+          'SplashScreen: No user found, admin mode detected, navigating to admin login',
         );
-      }
-    } else {
-      // Not logged in or fetch failed
-      // If isAdmin flag is set, go to admin login, otherwise go to onboarding
-      if (widget.isAdmin) {
-        print('SplashScreen: No user found, admin mode detected, navigating to admin login');
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const AdminAuthScreen()),
-        );
-      } else {
-        print('SplashScreen: User is null, navigating to Onboarding');
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
         );
       }
     }
@@ -149,7 +125,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Stack(
-          children: [      
+          children: [
             // Main content
             Center(
               child: Column(
@@ -180,9 +156,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       ),
                     ),
                   ),
-      
+
                   SizedBox(height: 40.h),
-      
+
                   // Loading text with shimmer effect
                   Shimmer(
                     child: Text(
@@ -194,12 +170,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       ),
                     ),
                   ),
-      
+
                   SizedBox(height: 100.h),
                 ],
               ),
             ),
-      
+
             // Version info at bottom
             Positioned(
               bottom: 20.h,
@@ -210,9 +186,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   'Version 2.0.1',
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: colorScheme.onSurfaceVariant.withValues(
-                      alpha: 0.5,
-                    ),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
                 ),
               ),

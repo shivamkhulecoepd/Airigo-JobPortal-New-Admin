@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:airigo_jobportal/core/providers/jobs_provider.dart';
 import 'package:airigo_jobportal/utils/extensions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,7 +48,7 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
       builder: (_) => ApplyJobModal(
         job: job,
         jobseekerName: profileState.profile?.name,
-        jobseekerSkills: profileState.profile?.skills?.join(', '),
+        jobseekerSkills: profileState.profile?.skills.join(', '),
         resumeUrl: profileState.profile?.resumeUrl,
         resumeFilename: profileState.profile?.resumeFilename,
       ),
@@ -285,10 +286,10 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
           child: AspectRatio(
             aspectRatio: 11 / 10,
             child: imageUrl.isNotEmpty
-                ? Image.network(
-                    imageUrl,
+                ? CachedNetworkImage(
+                    imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
+                    errorWidget: (_, __, ___) =>
                         Container(color: theme.colorScheme.tertiary),
                   )
                 : Container(color: theme.colorScheme.tertiary),
@@ -339,12 +340,12 @@ class _JobDetailScreenState extends ConsumerState<JobDetailScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
                   child: imageUrl.isNotEmpty
-                      ? Image.network(
-                          imageUrl,
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
                           width: 104.w,
                           height: 104.w,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
+                          errorWidget: (_, __, ___) => Container(
                             width: 104.w,
                             height: 104.w,
                             color: Colors.white,

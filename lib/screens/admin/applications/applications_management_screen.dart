@@ -236,11 +236,11 @@ class _ApplicationsManagementScreenState
                     _loadApplications();
                   }
                 : null,
-            child: const Text('Previous'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
+            child: const Text('Previous'),
           ),
           Text('$_currentPage / $_totalPages'),
           ElevatedButton(
@@ -250,11 +250,11 @@ class _ApplicationsManagementScreenState
                     _loadApplications();
                   }
                 : null,
-            child: const Text('Next'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
+            child: const Text('Next'),
           ),
         ],
       ),

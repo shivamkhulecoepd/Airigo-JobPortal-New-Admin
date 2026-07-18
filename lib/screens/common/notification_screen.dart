@@ -47,8 +47,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
       case NotificationViewType.admin:
         return ref.read(adminNotificationsProvider.notifier);
       case NotificationViewType.all:
-      default:
-        return ref.read(notificationsProvider.notifier);
+      return ref.read(notificationsProvider.notifier);
     }
   }
 
@@ -61,8 +60,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
       case NotificationViewType.admin:
         return ref.watch(adminNotificationsProvider);
       case NotificationViewType.all:
-      default:
-        return ref.watch(notificationsProvider);
+      return ref.watch(notificationsProvider);
     }
   }
 
@@ -75,8 +73,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
       case NotificationViewType.admin:
         return ref.watch(adminUnreadNotifCountProvider);
       case NotificationViewType.all:
-      default:
-        return ref.watch(unreadNotifCountProvider);
+      return ref.watch(unreadNotifCountProvider);
     }
   }
 

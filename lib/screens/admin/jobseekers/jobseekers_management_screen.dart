@@ -272,7 +272,7 @@ class _JobseekersManagementScreenState
                       : null,
                   child: jobseeker.profileImageUrl == null
                       ? Icon(
-                          Iconsax.profile,
+                          Iconsax.profile_tick,
                           size: 24.sp,
                           color: AppColors.primary,
                         )

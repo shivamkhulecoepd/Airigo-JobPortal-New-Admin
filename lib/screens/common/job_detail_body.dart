@@ -567,7 +567,7 @@ class _StatItem extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
-  const _StatItem({required this.label, required this.value, this.valueColor});
+  const _StatItem({required this.label, required this.value}) : valueColor = null;
 
   @override
   Widget build(BuildContext context) {

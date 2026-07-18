@@ -1,5 +1,6 @@
 import 'package:airigo_jobportal/utils/app_colors.dart';
 import 'package:airigo_jobportal/utils/extensions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -692,10 +693,10 @@ class _RecruiterProfileInfoState extends ConsumerState<RecruiterProfileInfo> {
                     job.companyLogoUrl != null &&
                         job.companyLogoUrl!.isNotEmpty &&
                         job.companyLogoUrl!.startsWith('http')
-                    ? Image.network(
-                        job.companyLogoUrl!,
+                    ? CachedNetworkImage(
+                        imageUrl: job.companyLogoUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Icon(
+                        errorWidget: (_, __, ___) => Icon(
                           Icons.work_outline_rounded,
                           color: context.theme.colorScheme.primary,
                           size: 18.sp,

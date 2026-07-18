@@ -6,7 +6,7 @@ import 'package:airigo_jobportal/screens/admin/recruiters/recruiters_management_
 import 'package:airigo_jobportal/screens/admin/jobs/jobs_management_screen.dart';
 import 'package:airigo_jobportal/screens/admin/applications/applications_management_screen.dart';
 import 'package:airigo_jobportal/screens/admin/issues/issues_management_screen.dart';
-import 'package:airigo_jobportal/screens/authentication/auth_screen.dart';
+import 'package:airigo_jobportal/screens/authentication/admin_auth_screen.dart';
 import 'package:airigo_jobportal/widgets/admin/admin_bottom_nav_bar.dart';
 import 'package:airigo_jobportal/widgets/shimmer_card.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
     }
 
     // If we finished loading but there's no user, or the user is not an admin, redirect.
-    if (user == null || user.role != 'admin') {
+    if (user == null || (user is! UserModel) || (user.role != 'admin' && user.role != 'super_admin')) {
       _redirectToLogin(context);
       return const Scaffold(body: SafeArea(child: ShimmerList()));
     }
@@ -66,7 +66,7 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              const AuthScreen(userType: 'admin', authType: 'login'),
+              const AdminAuthScreen(),
         ),
       );
     });
