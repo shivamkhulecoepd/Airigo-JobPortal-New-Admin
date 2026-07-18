@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:airigo_jobportal/models/admin/admin_issue_model.dart';
 import 'package:airigo_jobportal/services/admin/admin_api_service.dart';
-import 'package:airigo_jobportal/utils/theme.dart';
+import 'package:airigo_jobportal/utils/app_colors.dart';
+import 'package:airigo_jobportal/widgets/app_scaffold_feedback.dart';
+import 'package:airigo_jobportal/widgets/shimmer_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
@@ -62,9 +64,11 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
       if (mounted) {
         setState(() => _isLoading = false);
         print('Error loading issues: $e');
-        ScaffoldMessenger.of(
+        AppScaffoldFeedback.show(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error loading issues: $e')));
+          message: 'Error loading issues: $e',
+          type: ResponseType.error,
+        );
       }
     }
   }
@@ -98,6 +102,10 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
             onPressed: () =>
                 Navigator.pop(context, {'response': responseController.text}),
             child: const Text('Update'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
           ),
         ],
       ),
@@ -112,17 +120,18 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
               ? result['response']
               : null,
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Issue updated'),
-            backgroundColor: Colors.green,
-          ),
+        AppScaffoldFeedback.show(
+          context,
+          message: 'Issue updated',
+          type: ResponseType.success,
         );
         _loadIssues();
       } catch (e) {
-        ScaffoldMessenger.of(
+        AppScaffoldFeedback.show(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
+          message: 'Failed: $e',
+          type: ResponseType.error,
+        );
       }
     }
   }
@@ -133,7 +142,7 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Issues & Reports'),
         bottom: TabBar(
@@ -150,7 +159,7 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const SafeArea(child: ShimmerList())
           : TabBarView(
               controller: _tabController,
               children: [
@@ -162,8 +171,8 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
       floatingActionButton: FloatingActionButton(
         heroTag: 'admin_issues_refresh',
         onPressed: _loadIssues,
-        backgroundColor: AppTheme.primaryBrand,
-        child: const Icon(Icons.refresh),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
     );
   }
@@ -197,10 +206,15 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
   }
 
   Widget _buildIssueCard(AdminIssueModel issue) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+      ),
+      color: isDark ? AppColors.cardDark : AppColors.cardLight,
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -210,7 +224,7 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
               children: [
                 Icon(
                   issue.type == 'report' ? Iconsax.flag : Iconsax.warning_2,
-                  color: AppTheme.primaryBrand,
+                  color: AppColors.primary,
                   size: 24.sp,
                 ),
                 SizedBox(width: 12.w),
@@ -252,7 +266,7 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
               Container(
                 padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryBrand.withOpacity(0.1),
+                  color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Column(
@@ -283,6 +297,10 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
                     onPressed: () => _updateStatus(issue.id, 'in_progress'),
                     icon: const Icon(Icons.play_arrow, size: 16),
                     label: const Text('Start Working'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 if (issue.status == 'in_progress')
                   ElevatedButton.icon(
@@ -290,7 +308,8 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
                     icon: const Icon(Icons.check, size: 16),
                     label: const Text('Mark Resolved'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.success,
+                      foregroundColor: Colors.white,
                     ),
                   ),
                 if (issue.status == 'resolved')
@@ -298,6 +317,10 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
                     onPressed: () => _updateStatus(issue.id, 'in_progress'),
                     icon: const Icon(Icons.refresh, size: 16),
                     label: const Text('Reopen'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: BorderSide(color: AppColors.primary),
+                    ),
                   ),
               ],
             ),
@@ -311,16 +334,16 @@ class _IssuesManagementScreenState extends State<IssuesManagementScreen>
     Color color;
     switch (status) {
       case 'pending':
-        color = Colors.orange;
+        color = AppColors.warning;
         break;
       case 'in_progress':
-        color = Colors.blue;
+        color = AppColors.secondary;
         break;
       case 'resolved':
-        color = Colors.green;
+        color = AppColors.success;
         break;
       default:
-        color = Colors.grey;
+        color = AppColors.textMuted;
     }
 
     return Container(

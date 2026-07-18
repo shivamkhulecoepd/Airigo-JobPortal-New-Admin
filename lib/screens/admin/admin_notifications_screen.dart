@@ -1,7 +1,9 @@
+import 'package:airigo_jobportal/services/admin/admin_notification_service.dart';
+import 'package:airigo_jobportal/utils/app_colors.dart';
+import 'package:airigo_jobportal/widgets/app_scaffold_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:airigo_jobportal/services/admin/admin_notification_service.dart';
-import 'package:airigo_jobportal/models/user_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AdminNotificationsScreen extends ConsumerStatefulWidget {
   const AdminNotificationsScreen({super.key});
@@ -46,8 +48,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           _selectedNotificationType != 'job_rejection' && 
           _selectedNotificationType != 'recruiter_approval' && 
           _selectedNotificationType != 'recruiter_rejection') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter title and body')),
+        AppScaffoldFeedback.show(
+          context,
+          message: 'Please enter title and body',
+          type: ResponseType.warning,
         );
         return;
       }
@@ -77,8 +81,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
             // Specific user notification - need to get user ID from input
             String userIdText = _userIdController.text;
             if (userIdText.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Please enter User ID')),
+              AppScaffoldFeedback.show(
+                context,
+                message: 'Please enter User ID',
+                type: ResponseType.warning,
               );
               setState(() {
                 _isLoading = false;
@@ -87,8 +93,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
             }
             int userId = int.tryParse(userIdText) ?? 0;
             if (userId == 0) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Please enter a valid User ID')),
+              AppScaffoldFeedback.show(
+                context,
+                message: 'Please enter a valid User ID',
+                type: ResponseType.warning,
               );
               setState(() {
                 _isLoading = false;
@@ -106,8 +114,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           String jobIdText = _selectedJobId;
           String jobTitle = _jobTitleController.text;
           if (jobIdText.isEmpty || jobTitle.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter Job ID and Job Title')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter Job ID and Job Title',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -116,8 +126,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           }
           int jobId = int.tryParse(jobIdText) ?? 0;
           if (jobId == 0) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter a valid Job ID')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter a valid Job ID',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -134,8 +146,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           String rejJobTitle = _jobTitleController.text;
           String reason = _reasonController.text;
           if (rejJobIdText.isEmpty || rejJobTitle.isEmpty || reason.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter Job ID, Job Title, and Reason')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter Job ID, Job Title, and Reason',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -144,8 +158,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           }
           int rejJobId = int.tryParse(rejJobIdText) ?? 0;
           if (rejJobId == 0) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter a valid Job ID')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter a valid Job ID',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -161,8 +177,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
         case 'recruiter_approval':
           String recUserIdText = _userIdController.text;
           if (recUserIdText.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter User ID')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter User ID',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -171,8 +189,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           }
           int recUserId = int.tryParse(recUserIdText) ?? 0;
           if (recUserId == 0) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter a valid User ID')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter a valid User ID',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -187,8 +207,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           String rejUserIdText = _userIdController.text;
           String rejReason = _reasonController.text;
           if (rejUserIdText.isEmpty || rejReason.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter User ID and Reason')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter User ID and Reason',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -197,8 +219,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           }
           int rejUserId = int.tryParse(rejUserIdText) ?? 0;
           if (rejUserId == 0) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter a valid User ID')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter a valid User ID',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -217,8 +241,10 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
           String maintDuration = _maintenanceDurationController.text;
           
           if (maintTitle.isEmpty || maintBody.isEmpty || maintStart.isEmpty || maintDuration.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter all maintenance information')),
+            AppScaffoldFeedback.show(
+              context,
+              message: 'Please enter all maintenance information',
+              type: ResponseType.warning,
             );
             setState(() {
               _isLoading = false;
@@ -235,18 +261,24 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
       }
 
       if (result['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Notification sent successfully')),
+        AppScaffoldFeedback.show(
+          context,
+          message: result['message'] ?? 'Notification sent successfully',
+          type: ResponseType.success,
         );
         _clearForm();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Failed to send notification')),
+        AppScaffoldFeedback.show(
+          context,
+          message: result['message'] ?? 'Failed to send notification',
+          type: ResponseType.error,
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Error: $e',
+        type: ResponseType.error,
       );
     } finally {
       setState(() {
@@ -272,36 +304,42 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Admin Notifications'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Send Notifications',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             
             // Notification Type Selector
             Card(
-              elevation: 4,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r),
+                side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+              ),
+              color: isDark ? AppColors.cardDark : AppColors.cardLight,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Notification Type',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     DropdownButtonFormField<String>(
                       value: _selectedNotificationType,
                       decoration: const InputDecoration(
@@ -345,22 +383,27 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
               ),
             ),
             
-            const SizedBox(height: 20),
+            SizedBox(height: 16.h),
             
             // User Type Selector (only for general notifications)
             if (_selectedNotificationType == 'general') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Recipient Type',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       DropdownButtonFormField<String>(
                         value: _selectedUserType,
                         decoration: const InputDecoration(
@@ -400,23 +443,28 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // User ID Input (for specific user notifications)
             if (_selectedNotificationType == 'general' && _selectedUserType == 'specific') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'User ID',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _userIdController,
                         decoration: const InputDecoration(
@@ -430,23 +478,28 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // Job ID Input (for job-related notifications)
             if (_selectedNotificationType == 'job_approval' || _selectedNotificationType == 'job_rejection') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Job ID',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         decoration: const InputDecoration(
                           labelText: 'Enter Job ID',
@@ -464,20 +517,25 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
               
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Job Title',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _jobTitleController,
                         decoration: const InputDecoration(
@@ -490,23 +548,28 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // User ID Input (for recruiter-related notifications)
             if (_selectedNotificationType == 'recruiter_approval' || _selectedNotificationType == 'recruiter_rejection') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'User ID',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _userIdController,
                         decoration: const InputDecoration(
@@ -520,7 +583,7 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // Title Input (not for job/recruiter approval/rejection)
@@ -529,17 +592,22 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 _selectedNotificationType != 'recruiter_approval' && 
                 _selectedNotificationType != 'recruiter_rejection') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Title',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _titleController,
                         decoration: const InputDecoration(
@@ -552,7 +620,7 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // Body Input (not for job/recruiter approval/rejection)
@@ -561,17 +629,22 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 _selectedNotificationType != 'recruiter_approval' && 
                 _selectedNotificationType != 'recruiter_rejection') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Body',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _bodyController,
                         maxLines: 3,
@@ -585,23 +658,28 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // Reason Input (for rejection notifications)
             if (_selectedNotificationType == 'job_rejection' || _selectedNotificationType == 'recruiter_rejection') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Reason',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _reasonController,
                         maxLines: 3,
@@ -615,23 +693,28 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // Maintenance Info Input (for system maintenance notifications)
             if (_selectedNotificationType == 'system_maintenance') ...[
               Card(
-                elevation: 4,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                ),
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Maintenance Info',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _maintenanceStartController,
                         decoration: const InputDecoration(
@@ -639,7 +722,7 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         controller: _maintenanceDurationController,
                         decoration: const InputDecoration(
@@ -652,34 +735,47 @@ class _AdminNotificationsScreenState extends ConsumerState<AdminNotificationsScr
                 ),
               ),
               
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
             ],
             
             // Send Button
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 48.h,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _sendNotification,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
                 ),
                 child: _isLoading 
-                    ? const CircularProgressIndicator(color: Colors.white) 
-                    : const Text('Send Notification', style: TextStyle(fontSize: 16)),
+                    ? SizedBox(
+                        height: 24.h,
+                        width: 24.h,
+                        child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : Text('Send Notification', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
               ),
             ),
             
-            const SizedBox(height: 20),
+            SizedBox(height: 12.h),
             
             // Clear Form Button
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 48.h,
               child: OutlinedButton(
                 onPressed: _isLoading ? null : _clearForm,
-                child: const Text('Clear Form', style: TextStyle(fontSize: 16)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: isDark ? Colors.white : AppColors.textDark,
+                  side: BorderSide(color: isDark ? AppColors.dividerDark : AppColors.divider),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                ),
+                child: Text('Clear Form', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
               ),
             ),
           ],

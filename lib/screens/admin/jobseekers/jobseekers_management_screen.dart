@@ -2,6 +2,9 @@ import 'package:airigo_jobportal/models/admin/admin_user_model.dart';
 import 'package:airigo_jobportal/services/admin/admin_api_service.dart';
 import 'package:airigo_jobportal/utils/extensions.dart';
 import 'package:airigo_jobportal/utils/theme.dart';
+import 'package:airigo_jobportal/utils/app_colors.dart';
+import 'package:airigo_jobportal/widgets/app_scaffold_feedback.dart';
+import 'package:airigo_jobportal/widgets/shimmer_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -108,19 +111,17 @@ class _JobseekersManagementScreenState
   Future<void> _updateUserStatus(int userId, String newStatus) async {
     try {
       await _apiService.updateUserStatus(userId, newStatus);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('User status updated to $newStatus'),
-          backgroundColor: Colors.green,
-        ),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'User status updated to $newStatus',
+        type: ResponseType.success,
       );
       await _loadJobseekers();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update status: $e'),
-          backgroundColor: Colors.red,
-        ),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Failed to update status: $e',
+        type: ResponseType.error,
       );
     }
   }
@@ -130,7 +131,7 @@ class _JobseekersManagementScreenState
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: const Text('Jobseekers Management'), elevation: 0),
       body: Column(
         children: [
@@ -184,7 +185,7 @@ class _JobseekersManagementScreenState
           // Jobseekers List
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const SafeArea(child: ShimmerList())
                 : _error != null
                 ? _buildErrorView()
                 : _jobseekers.isEmpty
@@ -247,8 +248,14 @@ class _JobseekersManagementScreenState
 
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: BorderSide(
+          color: isDark ? AppColors.dividerDark : AppColors.divider,
+        ),
+      ),
+      color: isDark ? AppColors.cardDark : AppColors.cardLight,
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -259,7 +266,7 @@ class _JobseekersManagementScreenState
               children: [
                 CircleAvatar(
                   radius: 24.r,
-                  backgroundColor: AppTheme.primaryBrand.withOpacity(0.1),
+                  backgroundColor: AppColors.primary.withOpacity(0.1),
                   backgroundImage: jobseeker.profileImageUrl != null
                       ? CachedNetworkImageProvider(jobseeker.profileImageUrl!)
                       : null,
@@ -267,7 +274,7 @@ class _JobseekersManagementScreenState
                       ? Icon(
                           Iconsax.profile,
                           size: 24.sp,
-                          color: AppTheme.primaryBrand,
+                          color: AppColors.primary,
                         )
                       : null,
                 ),
@@ -336,10 +343,10 @@ class _JobseekersManagementScreenState
                       vertical: 4.h,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryBrand.withOpacity(0.1),
+                      color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8.r),
                       border: Border.all(
-                        color: AppTheme.primaryBrand.withOpacity(0.3),
+                        color: AppColors.primary.withOpacity(0.3),
                       ),
                     ),
                     child: Text(
@@ -424,16 +431,16 @@ class _JobseekersManagementScreenState
     Color color;
     switch (status.toLowerCase()) {
       case 'active':
-        color = Colors.green;
+        color = AppColors.success;
         break;
       case 'inactive':
-        color = Colors.grey;
+        color = AppColors.textMuted;
         break;
       case 'suspended':
-        color = Colors.red;
+        color = AppColors.error;
         break;
       default:
-        color = Colors.grey;
+        color = AppColors.textMuted;
     }
 
     return Container(
@@ -459,13 +466,13 @@ class _JobseekersManagementScreenState
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF121620)
-            : Colors.white,
+            ? AppColors.cardDark
+            : AppColors.cardLight,
         border: Border(
           top: BorderSide(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey.shade800
-                : Colors.grey.shade200,
+                ? AppColors.dividerDark
+                : AppColors.divider,
           ),
         ),
       ),
@@ -506,31 +513,39 @@ class _JobseekersManagementScreenState
       context: context,
       isScrollControlled: true,
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.90,
+        initialChildSize: 0.95,
         minChildSize: 0.5,
-        maxChildSize: 0.95,
+        maxChildSize: 1,
         builder: (context, scrollController) {
-          return SingleChildScrollView(
-            controller: scrollController,
-            child: Padding(
-              padding: EdgeInsets.all(20.w),
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 20.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Jobseeker Details',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        "Jobseeker Details",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Iconsax.close_square),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 10.h),
                   // Header with profile picture
                   Row(
                     children: [
                       CircleAvatar(
                         radius: 40.r,
-                        backgroundColor: AppTheme.primaryBrand.withOpacity(0.1),
+                        backgroundColor: AppColors.primary.withOpacity(0.1),
                         backgroundImage: jobseeker.profileImageUrl != null
                             ? CachedNetworkImageProvider(
                                 jobseeker.profileImageUrl!,
@@ -540,7 +555,7 @@ class _JobseekersManagementScreenState
                             ? Icon(
                                 Iconsax.profile_2user,
                                 size: 40.sp,
-                                color: AppTheme.primaryBrand,
+                                color: AppColors.primary,
                               )
                             : null,
                       ),
@@ -637,9 +652,7 @@ class _JobseekersManagementScreenState
                       children: jobseeker.skills!.map((skill) {
                         return Chip(
                           label: Text(skill),
-                          backgroundColor: AppTheme.primaryBrand.withOpacity(
-                            0.1,
-                          ),
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
                         );
                       }).toList(),
                     ),
@@ -686,15 +699,15 @@ class _JobseekersManagementScreenState
                     'Status',
                     jobseeker.status.toUpperCase(),
                     valueColor: jobseeker.status == 'active'
-                        ? Colors.green
-                        : Colors.red,
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                   _buildDetailRow(
                     'Email Verified',
                     jobseeker.emailVerified ? 'Verified' : 'Not Verified',
                     valueColor: jobseeker.emailVerified
-                        ? Colors.green
-                        : Colors.red,
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                   SizedBox(height: 16.h),
                   Divider(),
@@ -767,7 +780,6 @@ class _JobseekersManagementScreenState
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 120.w,
@@ -785,7 +797,7 @@ class _JobseekersManagementScreenState
               value,
               style: TextStyle(
                 fontSize: 13.sp,
-                color: Colors.green,
+                color: AppColors.success,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -865,7 +877,8 @@ class _JobseekersManagementScreenState
               _updateUserStatus(jobseeker.id, newStatus);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryBrand,
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
             ),
             child: const Text('Confirm'),
           ),

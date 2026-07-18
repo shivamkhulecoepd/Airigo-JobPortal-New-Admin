@@ -8,6 +8,7 @@ import 'package:airigo_jobportal/screens/admin/applications/applications_managem
 import 'package:airigo_jobportal/screens/admin/issues/issues_management_screen.dart';
 import 'package:airigo_jobportal/screens/authentication/auth_screen.dart';
 import 'package:airigo_jobportal/widgets/admin/admin_bottom_nav_bar.dart';
+import 'package:airigo_jobportal/widgets/shimmer_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,13 +38,13 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
     // Show a loading spinner only if we don't have a user yet and are currently loading.
     // This prevents the entire screen from flashing a spinner during background refreshes.
     if (user == null && authState.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: SafeArea(child: ShimmerList()));
     }
 
     // If we finished loading but there's no user, or the user is not an admin, redirect.
     if (user == null || user.role != 'admin') {
       _redirectToLogin(context);
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: SafeArea(child: ShimmerList()));
     }
 
     return Scaffold(

@@ -99,7 +99,7 @@ class AdminUserModel {
           ) ??
           DateTime.now(),
       updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
-      name: json['name'],
+      name: json['name'] ?? json['recruiter_name'],
       location: json['location'],
       experience: json['experience'],
       skills: parseSkills(json['skills']),

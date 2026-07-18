@@ -31,7 +31,7 @@ class Candidate {
 class ApplicantsListScreen extends ConsumerStatefulWidget {
   final bool isBackButton;
   final String? jobId; // Optional: Filter by specific job
-  
+
   const ApplicantsListScreen({
     required this.isBackButton,
     this.jobId,
@@ -45,16 +45,11 @@ class ApplicantsListScreen extends ConsumerStatefulWidget {
 class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
-  int _selectedFilter = 0; // 0=All, 1=Pending, 2=Shortlisted, 3=Accepted, 4=Rejected
+  int _selectedFilter =
+      0; // 0=All, 1=Pending, 2=Shortlisted, 3=Accepted, 4=Rejected
   bool _isLoadingState = false;
 
-  final _filters = [
-    'All',
-    'Pending',
-    'Shortlisted',
-    'Accepted',
-    'Rejected'
-  ];
+  final _filters = ['All', 'Pending', 'Shortlisted', 'Accepted', 'Rejected'];
 
   @override
   void initState() {
@@ -92,21 +87,15 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
     // Apply status filter
     // Filter 0 = All, 1 = Pending, 2 = Shortlisted, 3 = Accepted, 4 = Rejected
     if (_selectedFilter == 1) {
-      list = list
-          .where((c) => c.status == ApplicationStatus.pending)
-          .toList();
+      list = list.where((c) => c.status == ApplicationStatus.pending).toList();
     } else if (_selectedFilter == 2) {
       list = list
           .where((c) => c.status == ApplicationStatus.shortlisted)
           .toList();
     } else if (_selectedFilter == 3) {
-      list = list
-          .where((c) => c.status == ApplicationStatus.accepted)
-          .toList();
+      list = list.where((c) => c.status == ApplicationStatus.accepted).toList();
     } else if (_selectedFilter == 4) {
-      list = list
-          .where((c) => c.status == ApplicationStatus.rejected)
-          .toList();
+      list = list.where((c) => c.status == ApplicationStatus.rejected).toList();
     }
     return list;
   }
@@ -186,24 +175,25 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                 data: (state) {
                   // Get all applications
                   var applications = state.recentApplications;
-                  
+
                   // Filter by jobId if provided
                   if (widget.jobId != null) {
                     applications = applications
                         .where((app) => app.jobId.toString() == widget.jobId)
                         .toList();
                   }
-                  
+
                   // Apply search filter
                   if (_searchQuery.isNotEmpty) {
                     applications = applications.where((app) {
                       final name = app.jobseekerName?.toLowerCase() ?? '';
-                      final role = app.jobseekerCurrentRole?.toLowerCase() ?? '';
-                      return name.contains(_searchQuery) || 
-                             role.contains(_searchQuery);
+                      final role =
+                          app.jobseekerCurrentRole?.toLowerCase() ?? '';
+                      return name.contains(_searchQuery) ||
+                          role.contains(_searchQuery);
                     }).toList();
                   }
-                  
+
                   // Apply status filter
                   // Filter 0 = All, 1 = Pending, 2 = Shortlisted, 3 = Accepted, 4 = Rejected
                   if (_selectedFilter == 1) {
@@ -212,18 +202,24 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                         .toList();
                   } else if (_selectedFilter == 2) {
                     applications = applications
-                        .where((app) => app.status == ApplicationStatus.shortlisted)
+                        .where(
+                          (app) => app.status == ApplicationStatus.shortlisted,
+                        )
                         .toList();
                   } else if (_selectedFilter == 3) {
                     applications = applications
-                        .where((app) => app.status == ApplicationStatus.accepted)
+                        .where(
+                          (app) => app.status == ApplicationStatus.accepted,
+                        )
                         .toList();
                   } else if (_selectedFilter == 4) {
                     applications = applications
-                        .where((app) => app.status == ApplicationStatus.rejected)
+                        .where(
+                          (app) => app.status == ApplicationStatus.rejected,
+                        )
                         .toList();
                   }
-                  
+
                   return _buildCandidateList(applications, theme);
                 },
                 loading: () => _buildApplicantsListShimmer(theme),
@@ -245,7 +241,9 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                       SizedBox(height: 16.h),
                       ElevatedButton(
                         onPressed: () {
-                          ref.refresh(jobsStateProvider.notifier).loadRecruiterJobs();
+                          ref
+                              .refresh(jobsStateProvider.notifier)
+                              .loadRecruiterJobs();
                         },
                         child: Text('Retry'),
                       ),
@@ -438,13 +436,20 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
   }
 
   // ── Candidate List ─────────────────────────────────────────────────────────
-  Widget _buildCandidateList(List<ApplicationModel> applications, ThemeData theme) {
+  Widget _buildCandidateList(
+    List<ApplicationModel> applications,
+    ThemeData theme,
+  ) {
     if (applications.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.search_off, size: 40.sp, color: theme.dividerColor.withValues(alpha: 0.15)),
+            Icon(
+              Icons.search_off,
+              size: 40.sp,
+              color: theme.dividerColor.withValues(alpha: 0.15),
+            ),
             SizedBox(height: 10.h),
             Text(
               'No candidates found',
@@ -484,9 +489,7 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(
-            color: theme.dividerColor.withValues(alpha: 0.15),
-          ),
+          border: Border.all(color: theme.dividerColor.withValues(alpha: 0.15)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -512,7 +515,9 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10.r),
-                      child: app.jobseekerPhotoUrl != null && app.jobseekerPhotoUrl!.isNotEmpty
+                      child:
+                          app.jobseekerPhotoUrl != null &&
+                              app.jobseekerPhotoUrl!.isNotEmpty
                           ? ShimmerImage(
                               imageUrl: app.jobseekerPhotoUrl!,
                               width: 54.w,
@@ -520,7 +525,8 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                               borderRadius: 10.r,
                               errorWidget: CircleAvatar(
                                 radius: 27.r,
-                                backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                backgroundColor: theme.colorScheme.primary
+                                    .withValues(alpha: 0.1),
                                 child: Icon(
                                   Icons.person,
                                   color: theme.colorScheme.primary,
@@ -530,7 +536,8 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                             )
                           : CircleAvatar(
                               radius: 27.r,
-                              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                              backgroundColor: theme.colorScheme.primary
+                                  .withValues(alpha: 0.1),
                               child: Icon(
                                 Icons.person,
                                 color: theme.colorScheme.primary,
@@ -560,10 +567,12 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                           ),
                           SizedBox(height: 3.h),
                           Text(
-                            app.jobseekerCurrentRole ?? app.jobTitle ?? 'Applied Position',
+                            app.jobseekerCurrentRole ?? app.jobTitle,
                             style: TextStyle(
                               fontSize: 12.sp,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -573,9 +582,7 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                   ],
                 ),
                 SizedBox(height: 10.h),
-                Divider(
-                  color: theme.dividerColor.withValues(alpha: 0.15),
-                ),
+                Divider(color: theme.dividerColor.withValues(alpha: 0.15)),
                 // Bottom row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -596,7 +603,9 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                           style: TextStyle(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w500,
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
                           ),
                         ),
                       ],
@@ -605,7 +614,9 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
                       'Applied ${_getTimeAgo(app.appliedAt)}',
                       style: TextStyle(
                         fontSize: 11.sp,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.4,
+                        ),
                       ),
                     ),
                   ],
@@ -617,11 +628,11 @@ class _ApplicantsListScreenState extends ConsumerState<ApplicantsListScreen> {
       ),
     );
   }
-  
+
   String _getTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {

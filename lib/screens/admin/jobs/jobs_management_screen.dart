@@ -3,6 +3,9 @@ import 'package:airigo_jobportal/services/admin/admin_api_service.dart';
 import 'package:airigo_jobportal/services/admin/admin_notification_service.dart';
 import 'package:airigo_jobportal/utils/extensions.dart';
 import 'package:airigo_jobportal/utils/theme.dart';
+import 'package:airigo_jobportal/utils/app_colors.dart';
+import 'package:airigo_jobportal/widgets/app_scaffold_feedback.dart';
+import 'package:airigo_jobportal/widgets/shimmer_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -124,16 +127,17 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
         print('Failed to send approval notification: $e');
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Job approved'),
-          backgroundColor: Colors.green,
-        ),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Job approved',
+        type: ResponseType.success,
       );
       await _loadJobs();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Failed: $e',
+        type: ResponseType.error,
       );
     }
   }
@@ -155,16 +159,17 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
         print('Failed to send rejection notification: $e');
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Job rejected'),
-          backgroundColor: Colors.red,
-        ),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Job rejected',
+        type: ResponseType.success,
       );
       await _loadJobs();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Failed: $e',
+        type: ResponseType.error,
       );
     }
   }
@@ -192,16 +197,17 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
     if (confirm == true) {
       try {
         await _apiService.deleteJob(jobId);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Job deleted'),
-            backgroundColor: Colors.green,
-          ),
+        AppScaffoldFeedback.show(
+          context,
+          message: 'Job deleted',
+          type: ResponseType.success,
         );
         await _loadJobs();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+        AppScaffoldFeedback.show(
+          context,
+          message: 'Failed: $e',
+          type: ResponseType.error,
         );
       }
     }
@@ -213,7 +219,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Jobs Management'),
         bottom: TabBar(
@@ -226,7 +232,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const SafeArea(child: ShimmerList())
           : _error != null
           ? _buildErrorView()
           : TabBarView(
@@ -236,8 +242,8 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
       floatingActionButton: FloatingActionButton(
         heroTag: 'admin_jobs_refresh',
         onPressed: _loadJobs,
-        backgroundColor: AppTheme.primaryBrand,
-        child: const Icon(Icons.refresh),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
     );
   }
@@ -301,10 +307,17 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
   }
 
   Widget _buildJobCard(AdminJobModel job, {required bool isPending}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: BorderSide(
+          color: isDark ? AppColors.dividerDark : AppColors.divider,
+        ),
+      ),
+      color: isDark ? AppColors.cardDark : AppColors.cardLight,
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -327,10 +340,10 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                     width: 50.w,
                     height: 50.h,
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryBrand.withOpacity(0.1),
+                      color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
-                    child: Icon(Iconsax.building, color: AppTheme.primaryBrand),
+                    child: Icon(Iconsax.building, color: AppColors.primary),
                   ),
                 SizedBox(width: 12.w),
                 Expanded(
@@ -434,18 +447,19 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                   ElevatedButton(
                     onPressed: () => _approveJob(job.id),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      side: const BorderSide(color: Colors.green),
+                      backgroundColor: AppColors.success,
+                      side: const BorderSide(color: AppColors.success),
+                      foregroundColor: Colors.white,
                     ),
-                    // icon: const Icon(Icons.check, size: 16),
                     child: const Text('Approve'),
                   ),
                   SizedBox(width: 8.w),
                   ElevatedButton(
                     onPressed: () => _rejectJob(job.id),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                      backgroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text('Reject'),
                   ),
@@ -457,8 +471,8 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                     icon: const Icon(Icons.delete, size: 16),
                     label: const Text('Delete'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
                     ),
                   ),
                 ],
@@ -474,16 +488,16 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
     Color color;
     switch (status) {
       case 'approved':
-        color = Colors.green;
+        color = AppColors.success;
         break;
       case 'pending':
-        color = Colors.orange;
+        color = AppColors.warning;
         break;
       case 'rejected':
-        color = Colors.red;
+        color = AppColors.error;
         break;
       default:
-        color = Colors.grey;
+        color = AppColors.textMuted;
     }
 
     return Container(
@@ -509,17 +523,23 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
       context: context,
       isScrollControlled: true,
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.9,
+        initialChildSize: 0.95,
         minChildSize: 0.5,
-        maxChildSize: 0.95,
+        maxChildSize: 1,
         builder: (context, scrollController) {
-          return SingleChildScrollView(
-            controller: scrollController,
-            child: Padding(
-              padding: EdgeInsets.all(20.w),
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 20.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Iconsax.close_square),
+                    ),
+                  ),
                   // Header with company logo
                   Row(
                     children: [
@@ -538,13 +558,13 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                           width: 60.w,
                           height: 60.h,
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryBrand.withOpacity(0.1),
+                            color: AppColors.primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                           child: Icon(
                             Iconsax.building,
                             size: 30.sp,
-                            color: AppTheme.primaryBrand,
+                            color: AppColors.primary,
                           ),
                         ),
                       SizedBox(width: 16.w),
@@ -600,38 +620,42 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                     'Approval Status',
                     job.approvalStatus.toUpperCase(),
                     valueColor: job.approvalStatus == 'approved'
-                        ? Colors.green
+                        ? AppColors.success
                         : job.approvalStatus == 'rejected'
-                        ? Colors.red
-                        : Colors.orange,
+                        ? AppColors.error
+                        : AppColors.warning,
                   ),
                   _buildDetailRow(
                     'Status',
                     job.isActive ? 'Active' : 'Inactive',
-                    valueColor: job.isActive ? Colors.green : Colors.red,
+                    valueColor: job.isActive
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                   if (job.isUrgentHiring)
                     Container(
                       margin: EdgeInsets.only(top: 8.h),
                       padding: EdgeInsets.all(8.w),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: AppColors.error.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: Colors.red.withOpacity(0.3)),
+                        border: Border.all(
+                          color: AppColors.error.withOpacity(0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Iconsax.warning_2,
                             size: 16.sp,
-                            color: Colors.red,
+                            color: AppColors.error,
                           ),
                           SizedBox(width: 8.w),
                           Text(
                             'Urgent Hiring',
                             style: TextStyle(
                               fontSize: 12.sp,
-                              color: Colors.red,
+                              color: AppColors.error,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -658,7 +682,6 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                       job.companyUrl!,
                       actionText: 'Visit',
                       onTap: () async {
-                        // TODO: Open company website
                         print('Visit: ${job.companyUrl}');
                       },
                     ),
@@ -714,7 +737,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                             Icon(
                               Iconsax.tick_circle,
                               size: 16.sp,
-                              color: AppTheme.primaryBrand,
+                              color: AppColors.primary,
                             ),
                             SizedBox(width: 8.w),
                             Expanded(
@@ -749,9 +772,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
                       children: job.skillsRequired!.map((skill) {
                         return Chip(
                           label: Text(skill),
-                          backgroundColor: AppTheme.primaryBrand.withOpacity(
-                            0.1,
-                          ),
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
                         );
                       }).toList(),
                     ),
@@ -861,7 +882,6 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 130.w,
@@ -877,11 +897,7 @@ class _JobsManagementScreenState extends State<JobsManagementScreen>
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
-                fontSize: 13.sp,
-                color: AppTheme.primaryBrand,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
             ),
           ),
           TextButton(onPressed: onTap, child: Text(actionText)),

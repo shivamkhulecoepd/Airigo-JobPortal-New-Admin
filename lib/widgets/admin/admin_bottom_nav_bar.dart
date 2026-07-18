@@ -1,4 +1,4 @@
-import 'package:airigo_jobportal/utils/theme.dart';
+import 'package:airigo_jobportal/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
@@ -98,7 +98,7 @@ class AdminBottomNavBar extends StatelessWidget {
     final Color color = isActive
         ? isDark
             ? Colors.white
-            : AppTheme.primaryBrand
+            : AppColors.primary
         : (isDark ? Colors.grey.shade400 : Colors.grey);
 
     return GestureDetector(

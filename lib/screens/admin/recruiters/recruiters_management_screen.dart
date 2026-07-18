@@ -4,6 +4,9 @@ import 'package:airigo_jobportal/models/admin/admin_user_model.dart';
 import 'package:airigo_jobportal/services/admin/admin_api_service.dart';
 import 'package:airigo_jobportal/utils/extensions.dart';
 import 'package:airigo_jobportal/utils/theme.dart';
+import 'package:airigo_jobportal/utils/app_colors.dart';
+import 'package:airigo_jobportal/widgets/app_scaffold_feedback.dart';
+import 'package:airigo_jobportal/widgets/shimmer_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -99,16 +102,17 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
   Future<void> _approveRecruiter(int userId) async {
     try {
       await _apiService.approveRecruiter(userId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Recruiter approved'),
-          backgroundColor: Colors.green,
-        ),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Recruiter approved',
+        type: ResponseType.success,
       );
       await _loadRecruiters();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+      AppScaffoldFeedback.show(
+        context,
+        message: 'Failed: $e',
+        type: ResponseType.error,
       );
     }
   }
@@ -144,16 +148,17 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
     if (result != null && result.isNotEmpty) {
       try {
         await _apiService.rejectRecruiter(userId, result);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Recruiter rejected'),
-            backgroundColor: Colors.red,
-          ),
+        AppScaffoldFeedback.show(
+          context,
+          message: 'Recruiter rejected',
+          type: ResponseType.success,
         );
         await _loadRecruiters();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+        AppScaffoldFeedback.show(
+          context,
+          message: 'Failed: $e',
+          type: ResponseType.error,
         );
       }
     }
@@ -165,7 +170,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Recruiters Management'),
         bottom: TabBar(
@@ -187,7 +192,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const SafeArea(child: ShimmerList())
           : _error != null
           ? _buildErrorView()
           : TabBarView(
@@ -201,8 +206,8 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
       floatingActionButton: FloatingActionButton(
         heroTag: 'admin_recruiters_refresh',
         onPressed: () => _loadRecruiters(),
-        backgroundColor: AppTheme.primaryBrand,
-        child: const Icon(Icons.refresh),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
     );
   }
@@ -254,10 +259,18 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
   }
 
   Widget _buildRecruiterCard(AdminUserModel recruiter) {
+    log('Recruiter data while rendering:- ${recruiter.toJson()}');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: BorderSide(
+          color: isDark ? AppColors.dividerDark : AppColors.divider,
+        ),
+      ),
+      color: isDark ? AppColors.cardDark : AppColors.cardLight,
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -282,7 +295,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                               return Center(
                                 child: Icon(
                                   Icons.broken_image,
-                                  color: AppTheme.primaryBrand,
+                                  color: AppColors.primary,
                                 ),
                               );
                             },
@@ -291,7 +304,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                             child: Icon(
                               Iconsax.building,
                               size: 28.sp,
-                              color: AppTheme.primaryBrand,
+                              color: AppColors.primary,
                             ),
                           ),
                   ),
@@ -302,7 +315,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        recruiter.companyName ?? 'N/A',
+                        recruiter.name ?? 'N/A',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
@@ -372,7 +385,8 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                   ElevatedButton(
                     onPressed: () => _approveRecruiter(recruiter.id),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.success,
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text('Approve'),
                   ),
@@ -380,7 +394,8 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                   ElevatedButton(
                     onPressed: () => _rejectRecruiter(recruiter.id),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: AppColors.error,
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text('Reject'),
                   ),
@@ -394,7 +409,6 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
   }
 
   void _showRecruiterDetails(AdminUserModel recruiter) {
-    log('Showing recruiter details:- ${recruiter.toJson()}');
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -403,22 +417,30 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
         minChildSize: 0.5,
         maxChildSize: 1,
         builder: (context, scrollController) {
-          return SingleChildScrollView(
-            controller: scrollController,
-            child: Padding(
-              padding: EdgeInsets.all(20.w),
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 20.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header with company/recruiter name
-                  Text(
-                    "Recruiter Details",
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        "Recruiter Details",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Iconsax.close_square),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 10.h),
                   Row(
                     children: [
                       Container(
@@ -438,7 +460,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                                     return Center(
                                       child: Icon(
                                         Icons.broken_image,
-                                        color: AppTheme.primaryBrand,
+                                        color: AppColors.primary,
                                       ),
                                     );
                                   },
@@ -447,7 +469,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                                   child: Icon(
                                     Iconsax.building,
                                     size: 32.sp,
-                                    color: AppTheme.primaryBrand,
+                                    color: AppColors.primary,
                                   ),
                                 ),
                         ),
@@ -481,7 +503,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                       ),
                     ],
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 20.h),
                   Divider(),
                   SizedBox(height: 16.h),
 
@@ -552,24 +574,24 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                     'Status',
                     recruiter.status.toUpperCase(),
                     valueColor: recruiter.status == 'active'
-                        ? Colors.green
-                        : Colors.red,
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                   _buildDetailRow(
                     'Approval Status',
                     (recruiter.approvalStatus ?? 'pending').toUpperCase(),
                     valueColor: recruiter.approvalStatus == 'approved'
-                        ? Colors.green
+                        ? AppColors.success
                         : recruiter.approvalStatus == 'rejected'
-                        ? Colors.red
-                        : Colors.orange,
+                        ? AppColors.error
+                        : AppColors.warning,
                   ),
                   _buildDetailRow(
                     'Email Verified',
                     recruiter.emailVerified ? 'Verified' : 'Not Verified',
                     valueColor: recruiter.emailVerified
-                        ? Colors.green
-                        : Colors.red,
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                   SizedBox(height: 16.h),
                   Divider(),
@@ -664,7 +686,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 120.w,
@@ -716,11 +738,7 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
               padding: EdgeInsets.all(16.w),
               child: Row(
                 children: [
-                  Icon(
-                    Iconsax.image,
-                    size: 24.sp,
-                    color: AppTheme.primaryBrand,
-                  ),
+                  Icon(Iconsax.image, size: 20.sp, color: AppColors.primary),
                   SizedBox(width: 8.w),
                   Text(
                     'ID Card',
@@ -746,11 +764,11 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
+                  placeholder: (context, url) => SizedBox(
                     height: 300.h,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
-                  errorWidget: (context, url, error) => Container(
+                  errorWidget: (context, url, error) => SizedBox(
                     height: 300.h,
                     child: Center(
                       child: Column(
@@ -775,32 +793,29 @@ class _RecruitersManagementScreenState extends State<RecruitersManagementScreen>
             ),
             Divider(),
             // Actions
-            Padding(
-              padding: EdgeInsets.all(16.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      final url = Uri.parse(imageUrl);
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(
-                          url,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      }
-                    },
-                    icon: Icon(Iconsax.export_1),
-                    label: Text('Open in Browser'),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Iconsax.close_circle),
-                    label: Text('Close'),
-                  ),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    final url = Uri.parse(imageUrl);
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  },
+                  child: Text('Open in Browser'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Close'),
+                ),
+              ],
             ),
+            Divider(),
+            SizedBox(height: 10.h),
           ],
         ),
       ),

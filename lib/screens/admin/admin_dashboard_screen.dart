@@ -5,6 +5,7 @@ import 'package:airigo_jobportal/screens/admin/jobseekers/jobseekers_management_
 import 'package:airigo_jobportal/screens/admin/recruiters/recruiters_management_screen.dart';
 import 'package:airigo_jobportal/services/admin/admin_api_service.dart';
 import 'package:airigo_jobportal/services/notification_manager.dart';
+import 'package:airigo_jobportal/utils/app_colors.dart';
 import 'package:airigo_jobportal/utils/theme.dart';
 import 'package:airigo_jobportal/widgets/admin/stat_card.dart';
 import 'package:airigo_jobportal/core/providers/admin_notification_provider.dart';
@@ -93,7 +94,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
         actions: [
@@ -150,90 +151,42 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? _buildShimmerLoading(isDark)
-          : _error != null
-          ? _buildErrorView()
-          : _stats != null
-          ? _buildDashboard(isDark)
-          : const Center(child: Text('No data available')),
+      body: RefreshIndicator(
+        onRefresh: _loadStats,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            children: [
+              _buildWelcomeSection(isDark),
+              SizedBox(height: 20.h),
+              _isLoading
+                  ? _buildShimmerLoading(isDark)
+                  : _error != null
+                  ? _buildErrorView()
+                  : _stats != null
+                  ? _buildDashboard(isDark)
+                  : const Center(child: Text('No data available')),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   /// Shimmer loading effect for dashboard
   Widget _buildShimmerLoading(bool isDark) {
-    final baseColor = isDark
-        ? const Color(0xFF1E293B)
-        : const Color(0xFFE2E8F0);
+    final baseColor = isDark ? AppColors.cardDark : AppColors.shimmerBase;
     final highlightColor = isDark
-        ? const Color(0xFF334155)
-        : const Color(0xFFF1F5F9);
+        ? AppColors.dividerDark
+        : AppColors.shimmerHighlight;
 
     return RefreshIndicator(
       onRefresh: _loadStats,
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome Section Shimmer
-            Shimmer.fromColors(
-              baseColor: baseColor,
-              highlightColor: highlightColor,
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 32.sp,
-                          height: 32.sp,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 20.sp,
-                                width: 180.w,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(4.r),
-                                ),
-                              ),
-                              SizedBox(height: 8.h),
-                              Container(
-                                height: 14.sp,
-                                width: 250.w,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(4.r),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 24.h),
-
             // User Statistics Section
             _buildShimmerSection(
               isDark,
@@ -336,8 +289,11 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           child: Container(
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              color: isDark ? AppColors.cardDark : AppColors.cardLight,
               borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: isDark ? AppColors.dividerDark : AppColors.divider,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,7 +344,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.warning_2, size: 64.sp, color: AppTheme.primaryBrand),
+            Icon(Iconsax.warning_2, size: 64.sp, color: AppColors.error),
             SizedBox(height: 16.h),
             Text(
               'Failed to load statistics',
@@ -413,260 +369,249 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   }
 
   Widget _buildDashboard(bool isDark) {
-    return RefreshIndicator(
-      onRefresh: _loadStats,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // User Statistics
+        Text(
+          'User Statistics',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 12.h),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+          childAspectRatio: 1.3,
           children: [
-            // Welcome Section
-            _buildWelcomeSection(isDark),
-            SizedBox(height: 24.h),
-
-            // User Statistics
-            Text(
-              'User Statistics',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            StatCard(
+              title: 'Total Users',
+              value: _stats!.totalUsers.toString(),
+              icon: Iconsax.people,
+              color: AppColors.primary,
+              onTap: () {},
             ),
-            SizedBox(height: 12.h),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
-              childAspectRatio: 1.3,
-              children: [
-                StatCard(
-                  title: 'Total Users',
-                  value: _stats!.totalUsers.toString(),
-                  icon: Iconsax.people,
-                  color: AppTheme.primaryBrand,
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Jobseekers',
-                  value: _stats!.totalJobseekers.toString(),
-                  icon: Iconsax.profile_2user,
-                  color: const Color(0xFF182E8B),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const JobseekersManagementScreen(),
-                      ),
-                    );
-                  },
-                ),
-                StatCard(
-                  title: 'Recruiters',
-                  value: _stats!.totalRecruiters.toString(),
-                  icon: Iconsax.building,
-                  color: const Color(0xFF7F1A4D),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const RecruitersManagementScreen(),
-                      ),
-                    );
-                  },
-                ),
-                StatCard(
-                  title: 'Active Users',
-                  value: _stats!.activeUsers.toString(),
-                  icon: Iconsax.task,
-                  color: const Color(0xFF10B981),
-                  onTap: () {},
-                ),
-              ],
+            StatCard(
+              title: 'Jobseekers',
+              value: _stats!.totalJobseekers.toString(),
+              icon: Iconsax.profile_2user,
+              color: AppColors.secondary,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const JobseekersManagementScreen(),
+                  ),
+                );
+              },
             ),
-            SizedBox(height: 24.h),
-
-            // Job Statistics
-            Text(
-              'Job Statistics',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            StatCard(
+              title: 'Recruiters',
+              value: _stats!.totalRecruiters.toString(),
+              icon: Iconsax.building,
+              color: AppColors.accent,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const RecruitersManagementScreen(),
+                  ),
+                );
+              },
             ),
-            SizedBox(height: 12.h),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
-              childAspectRatio: 1.3,
-              children: [
-                StatCard(
-                  title: 'Total Jobs',
-                  value: _stats!.totalJobs.toString(),
-                  icon: Iconsax.briefcase,
-                  color: AppTheme.primaryBrand,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const JobsManagementScreen(),
-                      ),
-                    );
-                  },
-                ),
-                StatCard(
-                  title: 'Pending Approval',
-                  value: _stats!.pendingJobs.toString(),
-                  icon: Iconsax.clock,
-                  color: const Color(0xFFF59E0B),
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Active Jobs',
-                  value: _stats!.activeJobs.toString(),
-                  icon: Iconsax.task,
-                  color: const Color(0xFF10B981),
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Rejected',
-                  value: _stats!.rejectedJobs.toString(),
-                  icon: Iconsax.close_circle,
-                  color: const Color(0xFFEF4444),
-                  onTap: () {},
-                ),
-              ],
+            StatCard(
+              title: 'Active Users',
+              value: _stats!.activeUsers.toString(),
+              icon: Iconsax.task,
+              color: AppColors.success,
+              onTap: () {},
             ),
-            SizedBox(height: 24.h),
-
-            // Application Statistics
-            Text(
-              'Application Statistics',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12.h),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
-              childAspectRatio: 1.3,
-              children: [
-                StatCard(
-                  title: 'Total Applications',
-                  value: _stats!.totalApplications.toString(),
-                  icon: Iconsax.document_text,
-                  color: AppTheme.primaryBrand,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const ApplicationsManagementScreen(),
-                      ),
-                    );
-                  },
-                ),
-                StatCard(
-                  title: 'Pending',
-                  value: _stats!.pendingApplications.toString(),
-                  icon: Iconsax.clock,
-                  color: const Color(0xFFF59E0B),
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Shortlisted',
-                  value: _stats!.shortlistedApplications.toString(),
-                  icon: Iconsax.star,
-                  color: const Color(0xFF10B981),
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Accepted',
-                  value: _stats!.acceptedApplications.toString(),
-                  icon: Iconsax.tick_circle,
-                  color: const Color(0xFF10B981),
-                  onTap: () {},
-                ),
-              ],
-            ),
-            SizedBox(height: 24.h),
-
-            // Recruiter Approval Stats
-            Text(
-              'Recruiter Approvals',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12.h),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
-              childAspectRatio: 1.3,
-              children: [
-                StatCard(
-                  title: 'Pending Approval',
-                  value: _stats!.pendingRecruiters.toString(),
-                  icon: Iconsax.clock,
-                  color: const Color(0xFFF59E0B),
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Approved',
-                  value: _stats!.approvedRecruiters.toString(),
-                  icon: Iconsax.task,
-                  color: const Color(0xFF10B981),
-                  onTap: () {},
-                ),
-              ],
-            ),
-            SizedBox(height: 24.h),
-
-            // Issues Stats
-            Text(
-              'Issues & Reports',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12.h),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
-              childAspectRatio: 1.3,
-              children: [
-                StatCard(
-                  title: 'Total Issues',
-                  value: _stats!.totalIssues.toString(),
-                  icon: Iconsax.flag,
-                  color: AppTheme.primaryBrand,
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Pending',
-                  value: _stats!.pendingIssues.toString(),
-                  icon: Iconsax.clock,
-                  color: const Color(0xFFF59E0B),
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'In Progress',
-                  value: _stats!.inProgressIssues.toString(),
-                  icon: Iconsax.refresh,
-                  color: const Color(0xFF3B82F6),
-                  onTap: () {},
-                ),
-                StatCard(
-                  title: 'Resolved',
-                  value: _stats!.resolvedIssues.toString(),
-                  icon: Iconsax.task,
-                  color: const Color(0xFF10B981),
-                  onTap: () {},
-                ),
-              ],
-            ),
-            SizedBox(height: 32.h),
           ],
         ),
-      ),
+        SizedBox(height: 24.h),
+
+        // Job Statistics
+        Text(
+          'Job Statistics',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 12.h),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+          childAspectRatio: 1.3,
+          children: [
+            StatCard(
+              title: 'Total Jobs',
+              value: _stats!.totalJobs.toString(),
+              icon: Iconsax.briefcase,
+              color: AppColors.primary,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const JobsManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            StatCard(
+              title: 'Pending Approval',
+              value: _stats!.pendingJobs.toString(),
+              icon: Iconsax.clock,
+              color: AppColors.warning,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'Active Jobs',
+              value: _stats!.activeJobs.toString(),
+              icon: Iconsax.task,
+              color: AppColors.success,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'Rejected',
+              value: _stats!.rejectedJobs.toString(),
+              icon: Iconsax.close_circle,
+              color: AppColors.error,
+              onTap: () {},
+            ),
+          ],
+        ),
+        SizedBox(height: 24.h),
+
+        // Application Statistics
+        Text(
+          'Application Statistics',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 12.h),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+          childAspectRatio: 1.3,
+          children: [
+            StatCard(
+              title: 'Total Applications',
+              value: _stats!.totalApplications.toString(),
+              icon: Iconsax.document_text,
+              color: AppColors.primary,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ApplicationsManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            StatCard(
+              title: 'Pending',
+              value: _stats!.pendingApplications.toString(),
+              icon: Iconsax.clock,
+              color: AppColors.warning,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'Shortlisted',
+              value: _stats!.shortlistedApplications.toString(),
+              icon: Iconsax.star,
+              color: AppColors.secondary,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'Accepted',
+              value: _stats!.acceptedApplications.toString(),
+              icon: Iconsax.tick_circle,
+              color: AppColors.success,
+              onTap: () {},
+            ),
+          ],
+        ),
+        SizedBox(height: 24.h),
+
+        // Recruiter Approval Stats
+        Text(
+          'Recruiter Approvals',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 12.h),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+          childAspectRatio: 1.3,
+          children: [
+            StatCard(
+              title: 'Pending Approval',
+              value: _stats!.pendingRecruiters.toString(),
+              icon: Iconsax.clock,
+              color: AppColors.warning,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'Approved',
+              value: _stats!.approvedRecruiters.toString(),
+              icon: Iconsax.task,
+              color: AppColors.success,
+              onTap: () {},
+            ),
+          ],
+        ),
+        SizedBox(height: 24.h),
+
+        // Issues Stats
+        Text(
+          'Issues & Reports',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 12.h),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+          childAspectRatio: 1.3,
+          children: [
+            StatCard(
+              title: 'Total Issues',
+              value: _stats!.totalIssues.toString(),
+              icon: Iconsax.flag,
+              color: AppColors.primary,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'Pending',
+              value: _stats!.pendingIssues.toString(),
+              icon: Iconsax.clock,
+              color: AppColors.warning,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'In Progress',
+              value: _stats!.inProgressIssues.toString(),
+              icon: Iconsax.refresh,
+              color: AppColors.secondary,
+              onTap: () {},
+            ),
+            StatCard(
+              title: 'Resolved',
+              value: _stats!.resolvedIssues.toString(),
+              icon: Iconsax.task,
+              color: AppColors.success,
+              onTap: () {},
+            ),
+          ],
+        ),
+        SizedBox(height: 32.h),
+      ],
     );
   }
 
@@ -677,8 +622,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.primaryBrand,
-            AppTheme.primaryBrand.withOpacity(0.7),
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.primary.withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -686,7 +631,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryBrand.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -698,12 +643,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           Row(
             spacing: 8.w,
             children: [
-              // Icon(
-              //   Iconsax.shield_tick,
-              //   size: 32.sp,
-              //   color: Colors.white,
-              // ),
-              // SizedBox(width: 12.w),
               Expanded(
                 child: Text(
                   'Admin Control Panel',
@@ -775,12 +714,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryBrand.withOpacity(0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Iconsax.logout,
-                    color: AppTheme.primaryBrand,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 28,
                   ),
                 ),
@@ -837,7 +778,9 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryBrand,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),

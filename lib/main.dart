@@ -56,7 +56,7 @@ class _AirigoJobsState extends ConsumerState<AirigoJobs> {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp(
-          title: 'AirigoJobs Onboarding',
+          title: 'AirigoJobs Admin',
           debugShowCheckedModeBanner: false,
           showPerformanceOverlay:
               false, // Set to true temporarily to monitor performance

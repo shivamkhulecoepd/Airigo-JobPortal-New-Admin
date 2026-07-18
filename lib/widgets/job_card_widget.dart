@@ -154,23 +154,32 @@ class _FullJobCardState extends ConsumerState<_FullJobCard>
                         Consumer(
                           builder: (context, ref, child) {
                             final savedJobsState = ref.watch(savedJobsProvider);
-                            final isSaved = savedJobsState.value?.contains(job.id.toString()) ?? job.isInWishlist;
-                            
+                            final isSaved =
+                                savedJobsState.value?.contains(
+                                  job.id.toString(),
+                                ) ??
+                                job.isInWishlist;
+
                             return _SaveButton(
                               isSaved: isSaved,
                               onTap: () async {
                                 // Determine current state before toggle
-                                final wasSaved = savedJobsState.value?.contains(job.id.toString()) ?? job.isInWishlist;
-                                
-                                await ref.read(savedJobsProvider.notifier).toggle(
-                                  job.id.toString(),
-                                  jobModel: job,
-                                );
-                                
+                                final wasSaved =
+                                    savedJobsState.value?.contains(
+                                      job.id.toString(),
+                                    ) ??
+                                    job.isInWishlist;
+
+                                await ref
+                                    .read(savedJobsProvider.notifier)
+                                    .toggle(job.id.toString(), jobModel: job);
+
                                 // Show feedback message
                                 if (!wasSaved) {
                                   // Job was added to bookmarks
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
                                     if (context.mounted) {
                                       AppScaffoldFeedback.show(
                                         context,
@@ -181,7 +190,10 @@ class _FullJobCardState extends ConsumerState<_FullJobCard>
                                         onAction: () {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (_) => const SavedJobsScreen()),
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const SavedJobsScreen(),
+                                            ),
                                           );
                                         },
                                       );
@@ -189,7 +201,9 @@ class _FullJobCardState extends ConsumerState<_FullJobCard>
                                   });
                                 } else {
                                   // Job was removed from bookmarks
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
                                     if (context.mounted) {
                                       AppScaffoldFeedback.show(
                                         context,
@@ -336,7 +350,7 @@ class _FullJobCardState extends ConsumerState<_FullJobCard>
 
   void _showApplyModal(BuildContext context, WidgetRef ref) {
     final profileState = ref.read(jobseekerProfileProvider);
-    
+
     if (profileState.isLoading) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Loading your profile details...')),
@@ -351,7 +365,7 @@ class _FullJobCardState extends ConsumerState<_FullJobCard>
       builder: (_) => ApplyJobModal(
         job: widget.job,
         jobseekerName: profileState.profile?.name,
-        jobseekerSkills: profileState.profile?.skills?.join(', '),
+        jobseekerSkills: profileState.profile?.skills.join(', '),
         resumeUrl: profileState.profile?.resumeUrl,
         resumeFilename: profileState.profile?.resumeFilename,
       ),
@@ -393,18 +407,21 @@ class _CompactJobCard extends StatelessWidget {
                 Consumer(
                   builder: (context, ref, child) {
                     final savedJobsState = ref.watch(savedJobsProvider);
-                    final isSaved = savedJobsState.value?.contains(job.id.toString()) ?? job.isInWishlist;
-                    
+                    final isSaved =
+                        savedJobsState.value?.contains(job.id.toString()) ??
+                        job.isInWishlist;
+
                     return GestureDetector(
                       onTap: () async {
                         // Determine current state before toggle
-                        final wasSaved = savedJobsState.value?.contains(job.id.toString()) ?? job.isInWishlist;
-                        
-                        await ref.read(savedJobsProvider.notifier).toggle(
-                          job.id.toString(),
-                          jobModel: job,
-                        );
-                        
+                        final wasSaved =
+                            savedJobsState.value?.contains(job.id.toString()) ??
+                            job.isInWishlist;
+
+                        await ref
+                            .read(savedJobsProvider.notifier)
+                            .toggle(job.id.toString(), jobModel: job);
+
                         // Show feedback message
                         if (!wasSaved) {
                           // Job was added to bookmarks
@@ -412,14 +429,17 @@ class _CompactJobCard extends StatelessWidget {
                             if (context.mounted) {
                               AppScaffoldFeedback.show(
                                 context,
-                                message: '"${job.designation}" added to saved jobs',
+                                message:
+                                    '"${job.designation}" added to saved jobs',
                                 type: ResponseType.success,
                                 duration: const Duration(seconds: 3),
                                 actionText: 'View',
                                 onAction: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (_) => const SavedJobsScreen()),
+                                    MaterialPageRoute(
+                                      builder: (_) => const SavedJobsScreen(),
+                                    ),
                                   );
                                 },
                               );
@@ -431,7 +451,8 @@ class _CompactJobCard extends StatelessWidget {
                             if (context.mounted) {
                               AppScaffoldFeedback.show(
                                 context,
-                                message: '"${job.designation}" removed from saved jobs',
+                                message:
+                                    '"${job.designation}" removed from saved jobs',
                                 type: ResponseType.info,
                                 duration: const Duration(seconds: 3),
                               );
@@ -444,7 +465,9 @@ class _CompactJobCard extends StatelessWidget {
                             ? Icons.bookmark_rounded
                             : Icons.bookmark_border_rounded,
                         size: 18,
-                        color: isSaved ? AppColors.primary : AppColors.textMuted,
+                        color: isSaved
+                            ? AppColors.primary
+                            : AppColors.textMuted,
                       ),
                     );
                   },

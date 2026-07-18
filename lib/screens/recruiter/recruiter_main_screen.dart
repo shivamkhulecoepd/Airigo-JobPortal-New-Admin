@@ -7,6 +7,7 @@ import 'package:airigo_jobportal/screens/recruiter/recruiter_dashboard_screen.da
 import 'package:airigo_jobportal/screens/recruiter/recruiter_profile_screen.dart';
 import 'package:airigo_jobportal/widgets/common_nav_bar.dart';
 import 'package:airigo_jobportal/models/recruiter_model.dart';
+import 'package:airigo_jobportal/widgets/shimmer_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,7 +33,6 @@ class _RecruiterMainScreenState extends ConsumerState<RecruiterMainScreen> {
 
   final List<Widget> _recruiterScreens = [
     const RecruiterDashboardScreen(),
-    // RecruiterJobsScreen(),
     const ManagePostingsScreen(),
     const JobPostScreen(isBackButton: false),
     const ApplicantsListScreen(isBackButton: false),
@@ -41,49 +41,32 @@ class _RecruiterMainScreenState extends ConsumerState<RecruiterMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ref
-        .watch(authStateProvider)
-        .when(
-          data: (user) {
-            if (user == null) {
-              _redirectToLogin(context, 'recruiter');
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
+    final authState = ref.watch(authStateProvider);
+    final user = authState.value;
+    // Show a loading spinner only if we don't have a user yet and are currently loading.
+    // This prevents the entire screen from flashing a spinner during background refreshes.
+    if (user == null && authState.isLoading) {
+      return const Scaffold(body: SafeArea(child: ShimmerList()));
+    }
 
-            if (user is! RecruiterModel) {
-              _redirectToLogin(context, 'recruiter');
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
+    // If we finished loading but there's no user, or the user is not an admin, redirect.
+    if (user == null || user.role != 'recruiter') {
+      _redirectToLogin(context, 'recruiter');
+      return const Scaffold(body: SafeArea(child: ShimmerList()));
+    }
 
-            return Scaffold(
-              body: IndexedStack(
-                index: _currentIndex,
-                children: _recruiterScreens,
-              ),
-              bottomNavigationBar: CommonNavBar(
-                role: "recruiter",
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-              ),
-            );
-          },
-          loading: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-          error: (e, _) {
-            _redirectToLogin(context, 'recruiter');
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          },
-        );
+    return Scaffold(
+      body: _recruiterScreens[_currentIndex],
+      bottomNavigationBar: CommonNavBar(
+        role: "recruiter",
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+    );
   }
 
   void _redirectToLogin(BuildContext context, String type) {

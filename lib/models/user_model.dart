@@ -50,19 +50,23 @@ class UserModel {
         : (json['is_verified'] as bool? ?? false);
 
     return UserModel(
-      id: json['id']?.toString() ?? '',
-      name: json['name'] as String? ?? json['email']?.toString() ?? '',
+      id: json['id']?.toString() ?? json['user_id']?.toString() ?? '',
+      name: json['name'] as String? ?? json['recruiter_name'] as String? ?? '',
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       role:
           json['role'] as String? ??
           json['user_type'] as String? ??
           'jobseeker',
-      avatarUrl: json['avatar_url'] as String?,
+      avatarUrl:
+          json['avatar_url'] as String? ??
+          json['profile_image_url'] as String? ??
+          json['photo_url'] as String?,
       bio: json['bio'] as String?,
       skills: List<String>.from(json['skills'] ?? []),
       qualification: json['qualification'] as String?,
-      experienceYears: json['experience_years'] as int? ?? 0,
+      experienceYears:
+          json['experience_years'] as int? ?? json['experience'] as int? ?? 0,
       resumeUrl: json['resume_url'] as String?,
       companyName: json['company_name'] as String?,
       designation: json['designation'] as String?,

@@ -105,6 +105,7 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.primary,
       body: SafeArea(
+        top: false,
         child: Stack(
           children: [
             // Background gradient circles
@@ -142,23 +143,19 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                 ),
               ),
             ),
-            
+
             // Main content
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Back button
                 Padding(
-                  padding: EdgeInsets.only(
-                    top: 10.h,
-                    left: 16.h,
-                    right: 16.h,
-                  ),
+                  padding: EdgeInsets.only(top: 10.h, left: 16.h, right: 16.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 40.h),
-                      
+
                       // Header text
                       Row(
                         children: [
@@ -231,7 +228,9 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                               child: Container(
                                 padding: EdgeInsets.all(16.w),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -286,8 +285,8 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                                   color: Colors.grey,
                                 ),
                                 filled: true,
-                                fillColor: isDark 
-                                    ? theme.scaffoldBackgroundColor 
+                                fillColor: isDark
+                                    ? theme.scaffoldBackgroundColor
                                     : Colors.white,
                                 contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16.w,
@@ -429,10 +428,14 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                             Container(
                               padding: EdgeInsets.all(16.w),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(12.r),
                                 border: Border.all(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Column(
@@ -461,14 +464,18 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                                     'Email: admin@gmail.com',
                                     style: TextStyle(
                                       fontSize: 12.sp,
-                                      color: isDark ? Colors.white70 : Colors.black87,
+                                      color: isDark
+                                          ? Colors.white70
+                                          : Colors.black87,
                                     ),
                                   ),
                                   Text(
                                     'Password: admin123',
                                     style: TextStyle(
                                       fontSize: 12.sp,
-                                      color: isDark ? Colors.white70 : Colors.black87,
+                                      color: isDark
+                                          ? Colors.white70
+                                          : Colors.black87,
                                     ),
                                   ),
                                 ],
